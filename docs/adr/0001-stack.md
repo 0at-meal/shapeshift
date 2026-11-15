@@ -148,7 +148,7 @@ Decisions that come with Option A:
 - **LLM access goes through a small in-house interface** with one adapter per provider
   over the official SDKs, plus a separate embeddings interface. This keeps the dependency
   surface small and makes per-provider eval comparisons a configuration change.
-- **Monorepo layout**: `apps/web` (pnpm), `apps/api` (uv), `evals/` (Python, imports
+- **Monorepo layout**: `apps/web` (pnpm), `apps/api` (uv), `bench/` (Python, imports
   from `apps/api`). TypeScript API types are generated from FastAPI's OpenAPI schema.
 - **Root `package.json` scripts are the single entry point** for every command, so they
   work unchanged in PowerShell, bash and CI.
@@ -203,3 +203,13 @@ Still to verify (not checked while drafting; revisit this ADR if any of them fai
   under a no-network CSP.
 - That the tree-sitter TypeScript grammar is sufficient for the import allowlist and
   banned-identifier rules the firewall needs.
+
+## Amendments
+2026-11-15, from the F-001 spec (conflicts 1 and 4):
+- The Spider/BIRD harness lives in `bench/`, not `evals/`. `evals/` is kept for tests of
+  the agent's own configuration (CLAUDE.md, skills, hooks), as the SDLC playbook uses it.
+- "Raw sample values are opt-in" is narrowed. By default prompts also carry the distinct
+  values of text columns that have 20 or fewer of them, skipping columns that look
+  personal. Raw rows stay opt-in. Filters such as `status = 'Shipped'` are wrong without
+  the values.
+- Model providers are used on free API tiers, so limits are counted in tokens, not money.
