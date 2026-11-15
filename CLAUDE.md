@@ -14,8 +14,8 @@ all SQL in the browser with DuckDB-WASM, so raw rows stay on the user's device, 
 generated TSX in a sandboxed, no-network iframe. `apps/api` is a stateless FastAPI service
 that builds prompts, calls models through provider-agnostic LLM and embedding adapters,
 validates SQL with sqlglot, checks generated TSX with an AST firewall, signs what it
-validates, and stores share links with an expiry. `evals/` is a Python harness that imports
-the API's validation and repair code. The sandbox is the security boundary; the firewall is
+validates, and stores share links with an expiry. `bench/` is a Python harness that runs
+the API's validation and repair code against Spider and BIRD. The sandbox is the security boundary; the firewall is
 defence in depth — see docs/adr/.
 
 ## Workflow rules
