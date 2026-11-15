@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{ "type": "command", "command": "python3 .claude/hooks/guard_paths.py" }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{ "type": "command", "command": "pnpm format || true" }]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [{ "type": "command", "command": "python3 .claude/hooks/verify_on_stop.py" }]
+      }
+    ]
+  }
+}

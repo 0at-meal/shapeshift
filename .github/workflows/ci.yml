@@ -1,0 +1,29 @@
+name: ci
+on: [pull_request]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0               # full history, needed by the secret scan
+      - uses: pnpm/action-setup@v4     # version comes from "packageManager" in package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+      - uses: astral-sh/setup-uv@v5
+      - run: pnpm run setup            # pnpm install + uv sync --project apps/api
+      - run: pnpm verify               # lint + types + tests, fails on error
+      - run: pnpm coverage             # fail under your threshold
+      - run: pnpm audit:deps           # dependency vulnerability audit
+      - uses: gitleaks/gitleaks-action@v2   # secret scan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Traceability check
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}   # via env, never inline (avoids script injection)
+        run: |
+          printf '%s' "$PR_BODY" | grep -Eq "REQ-[0-9]+" \
+            || (echo "PR body must list REQ IDs" && exit 1)

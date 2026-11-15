@@ -1,0 +1,9 @@
+# Response bands for the Maintain stage: one block per watched metric.
+# Detection is a deterministic script comparing the metric to a rolling baseline;
+# these bands decide what Claude is allowed to do at each level.
+metric: {{METRIC_NAME}}        # e.g. api_latency_p95_ms
+baseline: rolling_7d
+bands:
+  - {at: 1sigma, action: log}
+  - {at: 2sigma, action: claude_diagnose_read_only}   # writes a new intent.md
+  - {at: 3sigma, action: claude_open_pr_or_runbook}   # e.g. pre-approved rollback; you merge
